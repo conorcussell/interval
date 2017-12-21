@@ -39,6 +39,12 @@ export default class Header extends Component {
     this.state.interval === 'WORK' ? this.stop() : this.start();
   }
 
+  setColor(color) {
+    document
+      .querySelector('meta[name="theme-color"]')
+      .setAttribute('content', color);
+  }
+
   start() {
     if (this.timer) {
       this.timer.stop();
@@ -51,6 +57,8 @@ export default class Header extends Component {
     this.setState({
       interval: 'WORK'
     });
+
+    this.setColor('#19a974');
 
     this.timer.onTime(this.handleTimeChange.bind(this));
   }
@@ -69,6 +77,8 @@ export default class Header extends Component {
     this.setState({
       interval: 'REST'
     });
+
+    this.setColor('#e7040f');
 
     this.timer.onTime(this.handleTimeChange.bind(this));
     this.timer.onAlmostDone(function() {
@@ -94,6 +104,7 @@ export default class Header extends Component {
       interval: null,
       time: null
     });
+    this.setColor('#333');
   }
 
   render(props, state) {
@@ -106,13 +117,17 @@ export default class Header extends Component {
         bg = 'bg-green';
         break;
       case 'REST':
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', '#e7040f');
         bg = time > 5000 ? 'bg-red' : 'bg-dark-red';
         break;
     }
 
     let formattedTime = formatTime(state.time) || ' ';
 
-    let fontSize = window.innerWidth < 340 ? 'f1' : 'f-5';
+    let fontSize =
+      typeof window !== 'undefined' && window.innerWidth < 340 ? 'f1' : 'f-5';
 
     return (
       <div class="vh-100">
