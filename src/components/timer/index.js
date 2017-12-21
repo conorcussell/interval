@@ -7,7 +7,7 @@ const Button = ({ onClick, children }) => {
     <button
       onClick={onClick}
       role="button"
-      class="f3 dark-gray br-100 h4 w4 ba bw2 b--dark-gray bg-transparent ttu outline-0 b"
+      class="pointer f3 dark-gray br-100 h4 w4 ba bw2 b--dark-gray bg-transparent ttu outline-0 b"
     >
       {children}
     </button>
@@ -22,9 +22,9 @@ function formatTime(ms) {
   seconds = seconds % 3600;
   let minutes = parseInt(seconds / 60);
   seconds = seconds % 60;
-  return `${hours ? hours + ':' : ''}${
-    minutes ? minutes + ':' : ''
-  }${seconds.toFixed(1)}`;
+  return `${hours ? hours.toString().padStart(2, '0') + ':' : ''}${
+    minutes ? minutes.toString().padStart(2, '0') + ':' : ''
+  }${minutes ? seconds.toFixed(1).padStart(4, '0') : seconds.toFixed(1)}`;
 }
 
 export default class Header extends Component {
@@ -110,13 +110,19 @@ export default class Header extends Component {
         break;
     }
 
+    let formattedTime = formatTime(state.time) || ' ';
+
+    let fontSize = window.innerWidth < 340 ? 'f1' : 'f-5';
+
     return (
       <div class="vh-100">
         <div class={`vh-50 flex items-center justify-around ${bg}`}>
           <div class="white h4 relative w-100">
             <h1 class="ma0 ttu tc">{interval || ' '}</h1>
-            <p class="f-5 ttu ma0 absolute bottom-0 tc w-100 code">
-              {formatTime(state.time) || ' '}
+            <p
+              class={`f-5 ttu ma0 absolute bottom-0 tc w-100 code ${fontSize}`}
+            >
+              {formattedTime}
             </p>
           </div>
         </div>
