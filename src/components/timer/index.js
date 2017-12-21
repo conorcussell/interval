@@ -14,8 +14,6 @@ const Button = ({ onClick, children }) => {
   );
 };
 
-// TODO: make this show one leading zero;
-
 function formatTime(ms) {
   let seconds = ms / 1000;
   let hours = parseInt(seconds / 3600);
@@ -70,7 +68,7 @@ export default class Header extends Component {
     }
     this.timer = new Stopwatch(this.state.time, {
       refreshRateMS: 100,
-      almostDoneMS: 1000
+      almostDoneMS: 10000
     });
     this.timer.start();
 
@@ -81,20 +79,24 @@ export default class Header extends Component {
     this.setColor('#e7040f');
 
     this.timer.onTime(this.handleTimeChange.bind(this));
-    this.timer.onAlmostDone(function() {
-      console.log('works?');
-    });
     this.timer.onDone(this.start.bind(this));
+  }
+
+  playBeep(beep = 'short') {
+    this[beep].play();
   }
 
   handleTimeChange(time) {
     this.setState({
       time: time.ms
     });
-  }
 
-  handleAlmostDone(time) {
-    console.log('make a sound');
+    // we are in a rest period so lets count down the last 5 seconds. This is JavaScript so times are a bit mental..
+    if (this.state.interval === 'REST' && time.ms < 6000 && time.ms > 800) {
+      if (time.ms % 1000 < 100) {
+        this.playBeep(time.ms > 1200 ? 'short' : 'long');
+      }
+    }
   }
 
   handleCancel() {
@@ -131,6 +133,14 @@ export default class Header extends Component {
 
     return (
       <div class="vh-100">
+        <audio ref={el => (this.short = el)}>
+          <source src="./assets/beep.wav" type="audio/wav" />
+          <source src="./assets/beep.mp3" type="audio/mp3" />
+        </audio>
+        <audio ref={el => (this.long = el)}>
+          <source src="./assets/longBeep.wav" type="audio/wav" />
+          <source src="./assets/longBeep.mp3" type="audio/mp3" />
+        </audio>
         <div class={`vh-50 flex items-center justify-around ${bg}`}>
           <div class="white h4 relative w-100">
             <h1 class="ma0 ttu tc">{interval || ' '}</h1>
