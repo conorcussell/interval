@@ -7,7 +7,7 @@ const Button = ({ onClick, children }) => {
     <button
       onClick={onClick}
       role="button"
-      class="f3 dark-gray br-100 h4 w4 ba bw2 b--dark-gray bg-transparent ttu"
+      class="f3 dark-gray br-100 h4 w4 ba bw2 b--dark-gray bg-transparent ttu outline-0 b"
     >
       {children}
     </button>
@@ -60,7 +60,10 @@ export default class Header extends Component {
       this.timer.stop();
       this.timer = null;
     }
-    this.timer = new Stopwatch(this.state.time, { refreshRateMS: 100 });
+    this.timer = new Stopwatch(this.state.time, {
+      refreshRateMS: 100,
+      almostDoneMS: 1000
+    });
     this.timer.start();
 
     this.setState({
@@ -68,14 +71,20 @@ export default class Header extends Component {
     });
 
     this.timer.onTime(this.handleTimeChange.bind(this));
+    this.timer.onAlmostDone(function() {
+      console.log('works?');
+    });
     this.timer.onDone(this.start.bind(this));
-    this.timer.onAlmostComplete();
   }
 
   handleTimeChange(time) {
     this.setState({
       time: time.ms
     });
+  }
+
+  handleAlmostDone(time) {
+    console.log('make a sound');
   }
 
   handleCancel() {
@@ -88,25 +97,38 @@ export default class Header extends Component {
   }
 
   render(props, state) {
-    const { interval } = state;
+    const { interval, time } = state;
+
+    let bg = 'bg-dark-gray';
+
+    switch (interval) {
+      case 'WORK':
+        bg = 'bg-green';
+        break;
+      case 'REST':
+        bg = time > 5000 ? 'bg-red' : 'bg-dark-red';
+        break;
+    }
+
     return (
       <div class="vh-100">
-        <div class="vh-50 bg-dark-gray flex items-center justify-around">
+        <div class={`vh-50 flex items-center justify-around ${bg}`}>
           <div class="white h4 relative w-100">
             <h1 class="ma0 ttu tc">{interval || ' '}</h1>
-            <p class="f-5 ttu ma0 absolute bottom-0 tc w-100">
+            <p class="f-5 ttu ma0 absolute bottom-0 tc w-100 code">
               {formatTime(state.time) || ' '}
             </p>
           </div>
         </div>
         <div class="vh-50 flex items-center justify-around relative">
-          {/* TODO: don't show the button when on a rest period */}
-          <Button onClick={this.toggle.bind(this)}>
-            {interval === 'WORK' ? 'Stop' : 'Start'}
-          </Button>
+          {interval !== 'REST' && (
+            <Button onClick={this.toggle.bind(this)}>
+              {interval === 'WORK' ? 'Stop' : 'Start'}
+            </Button>
+          )}
 
           <button
-            class="absolute bottom-1 f4 black bn bg-transparent"
+            class="absolute bottom-1 f4 black bn bg-transparent outline-0"
             onClick={this.handleCancel.bind(this)}
           >
             Cancel
