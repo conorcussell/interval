@@ -127,12 +127,14 @@ export default class Header extends Component {
             </Button>
           )}
 
-          <button
-            class="absolute bottom-1 f4 black bn bg-transparent outline-0"
-            onClick={this.handleCancel.bind(this)}
-          >
-            Cancel
-          </button>
+          {interval && (
+            <button
+              class="absolute bottom-1 f4 black bn bg-transparent outline-0"
+              onClick={this.handleCancel.bind(this)}
+            >
+              Reset
+            </button>
+          )}
         </div>
       </div>
     );
