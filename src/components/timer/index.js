@@ -160,7 +160,7 @@ export default class Header extends Component {
 
           {interval && (
             <button
-              class="absolute bottom-1 f4 black bn bg-transparent outline-0"
+              class="pointer absolute bottom-1 f4 black bn bg-transparent outline-0"
               onClick={this.handleCancel.bind(this)}
             >
               Reset
